@@ -1,40 +1,7 @@
-<header>
-  <h1 class="bg-red-500">{{appName}}</h1>
-</header>
+<app-header [appName]="appName" />
 
 <main>
-  <section class="space-y-4">
-    <header class="mb-4">
-      <h2>Events</h2>
-    </header>
-
-    @if (events.length === 0) {
-      <p>No events found.</p>
-    } @else {
-      <div class="grid grid-cols-5 gap-4">
-        @for (event of events; track event.id) {
-          <div class="border space-y-2">
-            <div>
-              <img [src]="event.cover.url" alt="" />
-            </div>
-
-            <div class="p-1">
-              <div class="font-semibold">{{event.name}}</div>
-
-              <!-- TODO Show date and time -->
-              <time>27/03/2024</time>
-            </div>
-          </div>
-        }
-      </div>
-    }
-  </section>
-
   <router-outlet />
 </main>
 
-<footer>
-  <small><strong>{{appName}}</strong> &copy; {{currentFullYear}}</small>
-
-  <div>Developed by <a href="">Diego Lopes Lima</a>.</div>
-</footer>
+<app-footer [appName]="appName" />

@@ -1,0 +1,29 @@
+<section class="space-y-4">
+  <app-container>
+    <div class="grid grid-cols-5">
+      <aside>
+        <header class="mb-4">
+          <h2>
+            <app-section-heading title="Filter" />
+          </h2>
+        </header>
+
+        <div>Under construction</div>
+      </aside>
+
+      <section class="col-span-4">
+        <header class="mb-4">
+          <h2>
+            <app-section-heading title="Events" />
+          </h2>
+        </header>
+
+        @if (events.length === 0) {
+          <p>No events found.</p>
+        } @else {
+          <app-events-list [events]="events" />
+        }
+      </section>
+    </div>
+  </app-container>
+</section>

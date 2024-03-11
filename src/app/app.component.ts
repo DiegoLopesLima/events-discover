@@ -1,36 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { EventsService } from './services/events.service';
-import { Subscription } from 'rxjs';
-import { IEvent } from './interfaces/event';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
   appName = 'Events Discover';
-  currentFullYear = new Date().getFullYear();
-  events: IEvent[] = [];
-  private subscriptions = new Subscription();
-
-  constructor(private eventsService: EventsService) {}
-
-  ngOnInit() {
-    const eventsSubscription = this.eventsService.retrieveEvents()
-      .subscribe((events) => {
-        console.log("events", events);
-
-        this.events = events;
-      });
-
-    this.subscriptions.add(eventsSubscription);
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
 }
