@@ -44,7 +44,6 @@ export class EventsFilterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscribeQueryParams();
-    this.subscribeFilter();
   }
 
   ngOnDestroy() {
@@ -53,28 +52,20 @@ export class EventsFilterComponent implements OnInit, OnDestroy {
 
   handleModelChange() {
     this.eventsService.setFilter(this.filterModel);
+
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.activatedRoute,
+        queryParams: this.eventsService.getFilterParamsFromModel(this.filterModel),
+        replaceUrl: true,
+      }
+    );
   }
 
   subscribeQueryParams() {
     const subscription = this.activatedRoute.queryParams.subscribe((params) => {
       this.filterModel = this.eventsService.getFilterModelFromParams(params);
-
-      this.eventsService.setFilter(this.filterModel);
-    });
-
-    this.subscriptions.add(subscription);
-  }
-
-  subscribeFilter() {
-    const subscription = this.eventsService.currentFilter$.subscribe((filter) => {
-      this.router.navigate(
-        [],
-        {
-          relativeTo: this.activatedRoute,
-          queryParams: this.eventsService.getFilterParamsFromModel(filter),
-          replaceUrl: true,
-        }
-      );
     });
 
     this.subscriptions.add(subscription);

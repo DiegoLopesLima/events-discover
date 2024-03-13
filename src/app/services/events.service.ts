@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { IEvent } from '../interfaces/event';
-import { BehaviorSubject, catchError, map, scan, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, scan, tap, throwError } from 'rxjs';
 import { EventsFilterModel, EventsFilterParams } from '../types/event';
 import { format } from 'date-fns';
 
@@ -24,11 +24,16 @@ export class EventsService {
   private baseURL = 'https://app.ticketmaster.com/discovery/v2/events.json';
   private consumerKey = environment.ticketMasterAPIKey!;
   private filter$ = new BehaviorSubject<EventsFilterModel>({} as EventsFilterModel);
+  private pages$ = new BehaviorSubject<number>(0);
 
   constructor(private http: HttpClient) {}
 
   get currentFilter$() {
     return this.filter$.asObservable();
+  }
+
+  get totalPages$() {
+    return this.pages$.asObservable();
   }
 
   getEvents(filter: EventsFilterModel, page = 0) {
@@ -40,10 +45,13 @@ export class EventsService {
       },
     })
       .pipe(
+        tap((response) => {
+          this.pages$.next(response.page.totalPages);
+        }),
         map(response => response._embedded?.events?.map((event) => ({
           ...event,
           cover: event.images.find(({ ratio, width }) => ratio === '3_2' && width === 305)!,
-        })) ?? [])
+        })) ?? []),
       )
       .pipe(
         catchError(this.handleGetEventsError)
@@ -91,8 +99,8 @@ export class EventsService {
       countryCode: countryCode ? countryCode : undefined,
       stateCode: stateCode ? stateCode : undefined,
       city: city ? city : undefined,
-      startDateTime: startDateTime ? format(startDateTime, 'yyyy-MM-dd HH:mm:ss.S') : undefined,
-      endDateTime: endDateTime ? format(endDateTime, 'yyyy-MM-dd HH:mm:ss.S') : undefined,
+      startDateTime: startDateTime ? format(startDateTime, 'yyyy-MM-dd\'T\'HH:mm:ss\'Z\'') : undefined,
+      endDateTime: endDateTime ? format(endDateTime, 'yyyy-MM-dd\'T\'HH:mm:ss\'Z\'') : undefined,
     };
 
     Object.keys(params).forEach((key) => {

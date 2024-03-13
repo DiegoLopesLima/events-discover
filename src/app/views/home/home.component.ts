@@ -1,7 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EventsListComponent } from '../../components/events-list/events-list.component';
 import { IEvent } from '../../interfaces/event';
-import { Observable, Subscription } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  Subscription,
+  scan,
+  shareReplay,
+  startWith,
+  switchMap
+} from 'rxjs';
 import { EventsService } from '../../services/events.service';
 import { ContainerComponent } from '../../components/container/container.component';
 import { SectionHeadingComponent } from '../../components/section-heading/section-heading.component';
@@ -27,9 +35,10 @@ import { AsyncPipe } from '@angular/common';
 })
 export class HomeComponent implements OnInit, OnDestroy {
   events$ = new Observable<IEvent[]>();
-  totalPages = 1;
-  page = 0;
+  loadMoreEvents = new Subject<void>();
   filter = {} as EventsFilterModel;
+  totalPages = 0;
+  page = 0;
   private subscriptions = new Subscription();
 
   constructor(
@@ -39,29 +48,54 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscribeQueryParams();
-
-    this.eventsService.currentFilter$.subscribe((filter) => {
-      this.filter = filter;
-    });
+    this.subscribeFilter();
+    this.subscribeTotalPages();
+    this.signEvents();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  getEvents(filter: EventsFilterModel) {
-    this.events$ = this.eventsService.getEvents(filter, this.page);
-  }
-
   subscribeQueryParams() {
     const subscription = this.activatedRoute.queryParams.subscribe((params) => {
-      this.getEvents(this.eventsService.getFilterModelFromParams(params));
+      this.page = 0;
+
+      this.eventsService.setFilter(this.eventsService.getFilterModelFromParams(params));
+
+      this.signEvents();
+    });
+
+    this.subscriptions.add(subscription);
+  }
+
+  subscribeFilter() {
+    const subscription = this.eventsService.currentFilter$.subscribe((filter) => {
+      this.filter = filter;
+    });
+
+    this.subscriptions.add(subscription);
+  }
+
+  signEvents() {
+    this.events$ = this.loadMoreEvents
+      .pipe(
+        startWith(null),
+        switchMap(() => this.eventsService.getEvents(this.filter, this.page++)),
+        scan((acc, events) => [...acc, ...events] as IEvent[], [] as IEvent[]),
+        shareReplay(1),
+      );
+  }
+
+  subscribeTotalPages() {
+    const subscription = this.eventsService.totalPages$.subscribe((totalPages) => {
+      this.totalPages = totalPages;
     });
 
     this.subscriptions.add(subscription);
   }
 
   handleLoadMore() {
-    console.log("handleLoadMore")
+    this.loadMoreEvents.next();
   }
 }
