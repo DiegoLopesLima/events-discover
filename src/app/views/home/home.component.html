@@ -1,6 +1,6 @@
 <section class="space-y-4">
   <app-container>
-    <div class="grid grid-cols-5">
+    <div class="grid grid-cols-5 gap-4">
       <aside>
         <header class="mb-4">
           <h2>
@@ -8,20 +8,31 @@
           </h2>
         </header>
 
-        <div>Under construction</div>
+        <app-events-filter />
       </aside>
 
-      <section class="col-span-4">
+      <section
+        class="col-span-4"
+        appInfiniteScroll
+        (infiniteTargetVisible)="handleLoadMore()"
+        infiniteRootMargin="300px"
+      >
         <header class="mb-4">
           <h2>
             <app-section-heading title="Events" />
           </h2>
         </header>
 
-        @if (events.length === 0) {
+        @if ((events$ | async)?.length === 0) {
           <p>No events found.</p>
         } @else {
-          <app-events-list [events]="events" />
+          <app-events-list [events]="events$ | async" />
+        }
+
+        @if (page < totalPages) {
+          <div #infiniteTarget>
+            <div class="w-full text-center mb-4">Loading...</div>
+          </div>
         }
       </section>
     </div>

@@ -1,10 +1,17 @@
 <mat-card class="h-full">
-  <img [src]="event.cover.url" alt="" mat-card-image />
+  <img
+    [src]="event.cover.url"
+    alt=""
+    mat-card-image
+    [width]="event.cover.width"
+    [height]="event.cover.width"
+  />
 
   <mat-card-header class="font-semibold">{{event.name}}</mat-card-header>
 
-  <mat-card-content>
-    <!-- TODO Show date and time -->
-    <time>27/03/2024</time>
+  <mat-card-content class="h-full">
+    <time class="h-full flex items-end justify-end text-neutral-500 text-sm">
+      {{event.dates.start.dateTime | date : 'M/d/YYYY'}}
+    </time>
   </mat-card-content>
 </mat-card>

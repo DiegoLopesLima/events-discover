@@ -10,5 +10,5 @@ import { EventsListItemComponent } from '../events-list-item/events-list-item.co
   styleUrl: './events-list.component.scss'
 })
 export class EventsListComponent {
-  @Input() events: IEvent[] = [];
+  @Input() events: IEvent[] | null = [];
 }

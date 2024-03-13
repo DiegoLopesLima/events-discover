@@ -1,0 +1,64 @@
+<div>
+  <mat-form-field class="w-full">
+    <mat-label>Country</mat-label>
+
+    <mat-select
+      [(ngModel)]="filterModel.countryCode"
+      (ngModelChange)="handleModelChange()"
+    >
+      @for (country of supportedCountries; track country.code) {
+        <mat-option [value]="country.code">{{country.name}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>State code</mat-label>
+
+    <input
+      type="text"
+      placeholder="Ex. NY"
+      matInput
+      [(ngModel)]="filterModel.stateCode"
+      (ngModelChange)="handleModelChange()"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>City</mat-label>
+
+    <input
+      type="text"
+      placeholder="Ex. New York"
+      matInput
+      [(ngModel)]="filterModel.city"
+      (ngModelChange)="handleModelChange()"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>Enter a date range</mat-label>
+
+    <mat-date-range-input [rangePicker]="picker">
+      <input
+        matStartDate
+        placeholder="Start date"
+        [(ngModel)]="filterModel.startDateTime"
+        (ngModelChange)="handleModelChange()"
+        readonly
+      />
+
+      <input
+        matEndDate
+        placeholder="End date"
+        [(ngModel)]="filterModel.endDateTime"
+        (ngModelChange)="handleModelChange()"
+        readonly
+      />
+    </mat-date-range-input>
+
+    <mat-datepicker-toggle matIconSuffix [for]="picker" />
+
+    <mat-date-range-picker #picker />
+  </mat-form-field>
+</div>

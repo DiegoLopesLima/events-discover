@@ -10,5 +10,10 @@ export interface IEvent {
   name: string;
   url: string;
   images: IEventImage[];
+  dates: {
+    start: {
+      dateTime: string;
+    };
+  };
   cover: IEventImage;
 }
