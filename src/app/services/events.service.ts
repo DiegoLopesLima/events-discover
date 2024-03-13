@@ -48,10 +48,7 @@ export class EventsService {
         tap((response) => {
           this.pages$.next(response.page.totalPages);
         }),
-        map(response => response._embedded?.events?.map((event) => ({
-          ...event,
-          cover: event.images.find(({ ratio, width }) => ratio === '3_2' && width === 305)!,
-        })) ?? []),
+        map(response => response._embedded?.events ?? []),
       )
       .pipe(
         catchError(this.handleGetEventsError)

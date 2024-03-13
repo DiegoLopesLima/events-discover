@@ -1,10 +1,10 @@
 <mat-card class="h-full">
   <img
-    [src]="event.cover.url"
+    [src]="event | getEventCoverImage"
     alt=""
     mat-card-image
-    [width]="event.cover.width"
-    [height]="event.cover.width"
+    [width]="305"
+    [height]="203"
   />
 
   <mat-card-header class="font-semibold">{{event.name}}</mat-card-header>
