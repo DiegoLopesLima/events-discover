@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { EventsListComponent } from '../../components/events-list/events-list.component';
 import { IEvent } from '../../interfaces/event';
 import {
@@ -18,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 import { EventsFilterComponent } from '../../components/events-filter/events-filter.component';
 import { EventsFilterModel } from '../../types/event';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -36,18 +36,19 @@ import { AsyncPipe } from '@angular/common';
 })
 export class HomeComponent implements OnInit, OnDestroy {
   events$ = new Observable<IEvent[]>();
-  loadMoreEvents = new Subject<void>();
-  filter = {} as EventsFilterModel;
   totalPages = 0;
   page = 0;
-  infiniteScrollDisabled = false;
+  private filter = {} as EventsFilterModel;
+  private loadMoreEvents = new Subject<void>();
   private subscriptions = new Subscription();
   private unsubscribeEvents$ = new Subject<void>();
 
   constructor(
     private eventsService: EventsService,
     private activatedRoute: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
+
 
   ngOnInit() {
     this.subscribeQueryParams();
@@ -104,15 +105,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   handleLoadMore() {
-    console.log('handleLoadMore');
-
     this.loadMoreEvents.next();
   }
 
   handleResetScroll() {
-    window.scroll({
-      top: 0,
-      behavior: "smooth",
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      window.scroll({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
   }
 }
