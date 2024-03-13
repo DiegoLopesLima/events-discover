@@ -8,7 +8,8 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap
+  switchMap,
+  takeUntil,
 } from 'rxjs';
 import { EventsService } from '../../services/events.service';
 import { ContainerComponent } from '../../components/container/container.component';
@@ -39,7 +40,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   filter = {} as EventsFilterModel;
   totalPages = 0;
   page = 0;
+  infiniteScrollDisabled = false;
   private subscriptions = new Subscription();
+  private unsubscribeEvents$ = new Subject<void>();
 
   constructor(
     private eventsService: EventsService,
@@ -55,14 +58,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+    this.unsubscribeEvents$.next();
+    this.unsubscribeEvents$.complete();
   }
 
   subscribeQueryParams() {
     const subscription = this.activatedRoute.queryParams.subscribe((params) => {
-      this.page = 0;
-
       this.eventsService.setFilter(this.eventsService.getFilterModelFromParams(params));
 
+        this.page = 0;
+
+      this.handleResetScroll();
+      this.unsubscribeEvents$.next();
       this.signEvents();
     });
 
@@ -80,6 +87,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   signEvents() {
     this.events$ = this.loadMoreEvents
       .pipe(
+        takeUntil(this.unsubscribeEvents$),
         startWith(null),
         switchMap(() => this.eventsService.getEvents(this.filter, this.page++)),
         scan((acc, events) => [...acc, ...events] as IEvent[], [] as IEvent[]),
@@ -96,6 +104,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   handleLoadMore() {
+    console.log('handleLoadMore');
+
     this.loadMoreEvents.next();
+  }
+
+  handleResetScroll() {
+    window.scroll({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 }

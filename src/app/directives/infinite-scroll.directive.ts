@@ -20,6 +20,7 @@ export class InfiniteScrollDirective implements OnDestroy, AfterViewInit {
   @Input('infiniteRoot') root?: Element;
   @Input('infiniteRootMargin') rootMargin? = '0px';
   @Input('infiniteRootThreshold') threshold? = 0;
+  @Input('infiniteDisabled') disabled? = false;
   @Output('infiniteTargetVisible') targetVisible = new EventEmitter();
   @ContentChild('infiniteTarget') targetRef!: ElementRef;
   private nativeObserver: IntersectionObserver | undefined;
@@ -29,7 +30,11 @@ export class InfiniteScrollDirective implements OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.nativeObserver = new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
+        if (
+          entries.some((entry) => entry.isIntersecting) &&
+          !this.disabled &&
+          window.scrollY > 0
+        ) {
           this.targetVisible.emit();
         }
       }, {
