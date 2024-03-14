@@ -105,7 +105,9 @@ export class HomeViewComponent implements OnInit, OnDestroy {
   }
 
   handleLoadMore() {
-    this.loadMoreEvents.next();
+    if (this.page < this.totalPages) {
+      this.loadMoreEvents.next();
+    }
   }
 
   handleResetScroll() {

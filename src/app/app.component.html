@@ -1,7 +1,9 @@
-<app-header [appName]="appName" />
+<div class="flex flex-col w-full min-h-screen">
+  <app-header [appName]="appName" />
 
-<main>
-  <router-outlet />
-</main>
+  <main class="flex-1">
+    <router-outlet />
+  </main>
 
-<app-footer [appName]="appName" />
+  <app-footer [appName]="appName" />
+</div>

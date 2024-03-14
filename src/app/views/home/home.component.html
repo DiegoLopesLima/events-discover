@@ -29,11 +29,11 @@
           <app-events-list [events]="events$ | async" />
         }
 
-        @if (page < totalPages) {
-          <div #infiniteTarget>
+        <div #infiniteTarget>
+          @if (page < totalPages) {
             <div class="w-full text-center mb-4">Loading...</div>
-          </div>
-        }
+          }
+        </div>
       </section>
     </div>
   </app-container>
