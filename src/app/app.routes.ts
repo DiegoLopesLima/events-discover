@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './views/home/home.component';
+import { HomeViewComponent } from './views/home/home.component';
+import { EventViewComponent } from './views/event/event.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
+    component: HomeViewComponent,
+  },
+  {
+    path: 'events/:id',
+    component: EventViewComponent,
   },
 ];

@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { IEvent } from '../interfaces/event';
-import { BehaviorSubject, catchError, map, scan, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, scan, shareReplay, tap, throwError } from 'rxjs';
 import { EventsFilterModel, EventsFilterParams } from '../types/event';
 import { format } from 'date-fns';
 
@@ -21,7 +21,7 @@ export interface IEventsResponse {
   providedIn: 'root',
 })
 export class EventsService {
-  private baseURL = 'https://app.ticketmaster.com/discovery/v2/events.json';
+  private baseURL = 'https://app.ticketmaster.com/discovery/v2';
   private consumerKey = environment.ticketMasterAPIKey!;
   private filter$ = new BehaviorSubject<EventsFilterModel>({} as EventsFilterModel);
   private pages$ = new BehaviorSubject<number>(0);
@@ -37,7 +37,7 @@ export class EventsService {
   }
 
   getEvents(filter: EventsFilterModel, page = 0) {
-    return this.http.get<IEventsResponse>(this.baseURL, {
+    return this.http.get<IEventsResponse>(`${this.baseURL}/events.json`, {
       params: {
         ...this.getFilterParamsFromModel(filter),
         page,
@@ -56,6 +56,32 @@ export class EventsService {
   }
 
   private handleGetEventsError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      console.error(
+        `Backend returned code ${error.status}, body was: `, error.error);
+    }
+
+    return throwError(() => new Error('An unexpected error occurred. Please try again later.'));
+  }
+
+  getEventById(id: string) {
+    return this.http.get<IEvent>(`${this.baseURL}/events/${id}.json`, {
+      params: {
+        apikey: this.consumerKey,
+      },
+    })
+      .pipe(shareReplay(1))
+      .pipe(
+        catchError(this.handleGetEventByIdError)
+      );
+  }
+
+  private handleGetEventByIdError(error: HttpErrorResponse) {
     if (error.status === 0) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error);

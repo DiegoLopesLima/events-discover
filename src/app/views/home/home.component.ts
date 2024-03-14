@@ -34,7 +34,7 @@ import { AsyncPipe, isPlatformBrowser } from '@angular/common';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeViewComponent implements OnInit, OnDestroy {
   events$ = new Observable<IEvent[]>();
   totalPages = 0;
   page = 0;

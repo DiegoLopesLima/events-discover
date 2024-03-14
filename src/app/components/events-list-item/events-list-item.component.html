@@ -1,16 +1,23 @@
 <mat-card class="h-full">
-  <img
-    [src]="event | getEventCoverImage"
-    alt=""
-    mat-card-image
-    [width]="305"
-    [height]="203"
-  />
+  <a [routerLink]="'events/' + event.id">
+    <img
+      [src]="event | getEventCoverImage"
+      alt=""
+      mat-card-image
+      [width]="305"
+      [height]="203"
+    />
+  </a>
 
-  <mat-card-header class="font-semibold">{{event.name}}</mat-card-header>
+  <mat-card-header class="font-semibold">
+    {{event.name}}
+  </mat-card-header>
 
   <mat-card-content class="h-full">
-    <time class="h-full flex items-end justify-end text-neutral-500 text-sm">
+    <time
+      [dateTime]="event.dates.start.dateTime"
+      class="h-full flex items-end justify-end text-neutral-500 text-sm"
+    >
       {{event.dates.start.dateTime | date : 'M/d/YYYY'}}
     </time>
   </mat-card-content>

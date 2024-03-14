@@ -1,0 +1,23 @@
+<article class="mb-4">
+  <app-container>
+    @if (event$ | async) {
+      <img
+        [src]="event$ | async | getEventCoverImage"
+        alt=""
+        mat-card-image
+        [width]="305"
+        [height]="203"
+      />
+
+      <h2>{{(event$ | async)?.name}}</h2>
+
+      <time
+        [dateTime]="(event$ | async)?.dates?.start?.dateTime"
+      >
+        {{(event$ | async)?.dates?.start?.dateTime | date : 'M/d/YYYY'}}
+      </time>
+    } @else {
+      <p>Event not found.</p>
+    }
+  </app-container>
+</article>
