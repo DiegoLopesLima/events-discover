@@ -1,7 +1,7 @@
 <section class="space-y-4">
   <app-container>
-    <div class="grid grid-cols-5 gap-4">
-      <aside>
+    <div class="grid sm:grid-cols-4 lg:grid-cols-5 gap-4">
+      <aside class="col-span-1">
         <header class="mb-4">
           <h2>
             <app-section-heading title="Filter" />
@@ -12,7 +12,7 @@
       </aside>
 
       <section
-        class="col-span-4"
+        class="sm:col-span-3 lg:col-span-4"
         appInfiniteScroll
         (infiniteTargetVisible)="handleLoadMore()"
         infiniteRootMargin="300px"

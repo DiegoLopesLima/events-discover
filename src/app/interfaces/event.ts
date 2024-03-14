@@ -8,6 +8,7 @@ export interface IEventImage {
 export interface IEvent {
   id: string;
   name: string;
+  info: string;
   url: string;
   images: IEventImage[];
   dates: {

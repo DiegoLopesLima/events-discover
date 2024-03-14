@@ -1,23 +1,46 @@
 <article class="mb-4">
   <app-container>
-    @if (event$ | async) {
-      <img
-        [src]="event$ | async | getEventCoverImage"
-        alt=""
-        mat-card-image
-        [width]="305"
-        [height]="203"
-      />
+    <ng-container *ngIf="event$ | async as event; else loading">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div>
+          <img
+            [src]="event | getEventCoverImage : 'details'"
+            alt=""
+            mat-card-image
+            [width]="1024"
+            [height]="576"
+            class="rounded"
+          />
+        </div>
 
-      <h2>{{(event$ | async)?.name}}</h2>
+        <div class="flex flex-col justify-between">
+          <div class="space-y-2 mb-4">
+            <h2 class="font-bold text-xl">{{event?.name}}</h2>
 
-      <time
-        [dateTime]="(event$ | async)?.dates?.start?.dateTime"
-      >
-        {{(event$ | async)?.dates?.start?.dateTime | date : 'M/d/YYYY'}}
-      </time>
-    } @else {
-      <p>Event not found.</p>
-    }
+            <div class="text-right text-sm">
+              <time
+                [dateTime]="event?.dates?.start?.dateTime"
+              >
+                {{event?.dates?.start?.dateTime | date : 'M/d/YYYY'}}
+              </time>
+            </div>
+
+            <div class="text-justify">{{event.info}}</div>
+          </div>
+
+          <a
+            mat-raised-button
+            [href]="event.url"
+            target="_blank"
+            color="primary"
+            rel="noopener noreferrer"
+          >Buy tickets!</a>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loading>
+      <p>Loading...</p>
+    </ng-template>
   </app-container>
 </article>
